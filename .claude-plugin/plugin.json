@@ -13,5 +13,7 @@
     "equipment",
     "rental",
     "venues"
-  ]
+  ],
+  "privacyPolicyUrl": "https://eventnetwork.eu/privacy-policy",
+  "icon": ".claude-plugin/icon.png"
 }
