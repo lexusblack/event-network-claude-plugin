@@ -1,7 +1,7 @@
 {
   "name": "event-network",
-  "version": "0.3.0",
-  "description": "Search public Event Network companies, specialists, rental equipment, used-equipment offers and event venues; check shared availability.",
+  "version": "0.4.2",
+  "description": "Search public Event Network directories anonymously; connect New Systems OAuth to read data your profile can access.",
   "author": {
     "name": "Event Network",
     "url": "https://eventnetwork.eu"

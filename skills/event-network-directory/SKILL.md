@@ -5,7 +5,7 @@ description: Search Event Network companies, specialists, rental and used-equipm
 
 # Event Network directory workflow
 
-Use the Event Network MCP tools whenever the user asks for current companies, specialists, equipment listings, public profiles, or specialist availability. Do not fabricate results from general knowledge. Respond in the language used by the user and include returned profile links when available.
+Use the Event Network MCP tools whenever the user asks for current companies, specialists, equipment listings, jobs, public profiles, venue details, purchase groups, technical riders, or availability. Public directory tools work anonymously. Account-specific tools require New Systems OAuth and explicit user consent; if connected, use `list_account_contexts` first for personal/company data, ask which context to use if ambiguous, and pass the selected context on every private call. Do not claim that authentication is connected unless those tools are available. Do not fabricate results from general knowledge. Respond in the language used by the user and include a clickable Markdown link using profileUrl for every result you present: companies and teams, specialists (including speakers and artists), venues, jobs, rental equipment, used-equipment listings, purchase groups, and riders. Use the item name as the link label. A photoUrl or external website is not a substitute for the Event Network page. Do not invent a link if profileUrl is missing.
 
 ## Company searches
 
@@ -56,3 +56,18 @@ Use the Event Network MCP tools whenever the user asks for current companies, sp
 - If `nextPage` is non-null and more results are needed, continue with that page number; do not repeat page one.
 - Use only the public fields returned by the MCP tools. Do not seek or infer private contacts, exact addresses, calendar event details, or account data. Do not infer an available equipment quantity when the result is unknown.
 - This MCP is read-only. Do not claim to book equipment, contact a company, or change an Event Network record.
+
+## New Systems account access
+
+- Ask for New Systems sign-in only when the user requests their own jobs, listings, a profile-specific job match, a selected profile's calendar status, purchase groups or technical riders that require account visibility. Anonymous public searches remain available without connecting an account. When the requested protected tool is not authorized, call it so Claude can open the New Systems browser sign-in and consent flow; do not treat an authentication error as empty data or claim that the account is connected.
+- Explain that the requested access is read-only and uses `eventnetwork:read`; the user must sign in and consent in New Systems. Never ask them to paste a password, access token or client secret into chat.
+- Claude registers its public OAuth client automatically through DCR with PKCE. This registers the client application only; the user must still sign in or create a New Systems account in the browser and approve the requested scope.
+- Call `list_account_contexts` before reading own data. If multiple personal/company contexts are returned, ask which one to use. Pass the chosen `contextType` and `contextId` to every operation that requires a context; never silently select or switch a company.
+- `get_my_jobs`, `get_my_job_detail` and `get_my_listings` return only records the selected context is allowed to see. `find_matching_jobs` checks one bounded candidate page at a time and is not an exhaustive ranking. Follow its next cursor only when needed.
+- `get_my_calendar` returns only shared availability status for an explicit date range. Never request or expose event names, clients, locations or notes.
+- `search_purchase_groups` and `search_technical_riders` are account-protected searches. Return profile links for results. Technical rider results do not include protected file URLs or PDF contents.
+- OAuth permission does not permit publishing jobs, sending applications or messages, booking equipment, changing calendars, or editing any Event Network data.
+
+## Confirmed collaborations
+
+For every company/team or specialist profile (including speakers and artists) you present, include the returned confirmedCollaborationsCount alongside its profile link. Use only this confirmed total, not ratings, posts or follower counts. Null means the API did not provide the number; say it is unavailable instead of inventing zero.
